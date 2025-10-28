@@ -63,11 +63,11 @@ O padrão Strategy é utilizado para permitir a aplicação dinâmica das seguin
 
 ### 👥 Dados de Acesso (Testes)
 
-[cite_start]Para fins de teste e demonstração, utilize os seguintes dados de login[cite: 32]:
+Para fins de teste e demonstração, utilize os seguintes dados de login:
 
 | Vendedor | Senha |
 | :--- | :--- |
-| `vendedor1` | [cite_start]`senha1` [cite: 35, 36] |
-| `vendedor2` | [cite_start]`senha2` [cite: 37, 38] |
-| `vendedor3` | [cite_start]`senha3` [cite: 39, 40] |
-| `vendedor4` | [cite_start]`senha4` [cite: 41, 42] |
+| `vendedor1` | `senha1`  |
+| `vendedor2` | `senha2`  |
+| `vendedor3` | `senha3`  |
+| `vendedor4` | `senha4`  |
