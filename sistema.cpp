@@ -26,8 +26,6 @@ class Cliente{
 
 };
 
-
-
 class SistemaClientes {
     private:
         std::vector<Cliente> clientes;
@@ -74,25 +72,80 @@ class Vendedor{
         void setSenha(std::string senha){this->senha = senha;}
 };
 
+class SistemaVendedor {
+    private:
+        std::vector<Vendedor> vendedores;
+    public:
+        void cadastrarVendedor(Vendedor& novoVendedor) {
+            for (Vendedor& vendedores : vendedores) {
+                if (vendedores.getNomeVendedor() == novoVendedor.getNomeVendedor()) {
+                    std::cout << "ERRO: Cliente já cadastrado" << std::endl;
+                    return;
+                }
+            }
+
+            vendedores.push_back(novoVendedor);
+            std::cout << "Cadastro bem-sucedido!\n" << "Seja Bem-Vindo(a) ao time!"<< std::endl;
+
+        }
+
+};
+
 class Login{
     public:
-            //construtor
-            Login(std::string login, std::string senha){
-
+            void verificar(std::string login, std::string senha, std::vector<Vendedor>& vendedores){
+                for (Vendedor& vendedor : vendedores) {
+                    if (vendedor.getLogin() == login ) {
+                        if(vendedor.getSenha() == senha){
+                            std::cout << "Bem-Vindo" << std::endl;
+                        }else{
+                            std::cout << "ERRO: senha incorreta!" << std::endl;
+                        }
+                    }else{
+                        std::cout << "ERRO: Login incorreto!" << std::endl;
+                    }
+                }
             }
     };
 
 int main() {
-    SistemaClientes sistema;
+    // Criando sistemas
+    SistemaClientes sistemaClientes;
+    SistemaVendedor sistemaVendedores;
+    Login sistemaLogin;
 
-    Cliente c1("Maria Alves", "123456789");
-    Cliente c2("João Silva", "987654321");
+    // Cadastrando clientes
+    Cliente cliente1("Maria Alves", "123456789");
+    Cliente cliente2("João Silva", "987654321");
+    Cliente cliente3("Maria Alves", "123456789"); // duplicado
 
-    sistema.cadastrarCliente(c1); // Deve cadastrar
-    sistema.cadastrarCliente(c2); // Deve cadastrar
-    sistema.cadastrarCliente(c1); // Deve dar erro
+    std::cout << "\n--- Cadastro de Clientes ---\n";
+    sistemaClientes.cadastrarCliente(cliente1); // deve cadastrar
+    sistemaClientes.cadastrarCliente(cliente2); // deve cadastrar
+    sistemaClientes.cadastrarCliente(cliente3); // deve dar erro
+
+    // Cadastrando vendedores
+    Vendedor vendedor1("Carlos Mendes", "carlos123", "senha456");
+    Vendedor vendedor2("Ana Paula", "ana2023", "minhasenha");
+    Vendedor vendedor3("Carlos Mendes", "carlos123", "senha456"); // duplicado
+
+    std::cout << "\n--- Cadastro de Vendedores ---\n";
+    sistemaVendedores.cadastrarVendedor(vendedor1); // deve cadastrar
+    sistemaVendedores.cadastrarVendedor(vendedor2); // deve cadastrar
+    sistemaVendedores.cadastrarVendedor(vendedor3); // deve dar erro
+
+    // Testando login
+    std::cout << "\n--- Teste de Login ---\n";
+    std::vector<Vendedor> listaVendedores = {
+        vendedor1,
+        vendedor2
+    };
+
+    sistemaLogin.verificar("carlos123", "senha456", listaVendedores); // sucesso
+    sistemaLogin.verificar("carlos123", "errada", listaVendedores);   // senha incorreta
+    sistemaLogin.verificar("naoexiste", "1234", listaVendedores);     // login incorreto
 
     return 0;
-
 }
+
 
