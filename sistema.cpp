@@ -2,24 +2,29 @@
 #include <vector>
 #include <string>
 
-class Cliente {
+class Pessoa {
 private:
-    std::string nomeCompleto;
+    std::string nome;
     std::string documento;
 
 public:
-    Cliente(std::string nome, std::string documento) {
-        setNomeCompleto(nome);
+    Pessoa(std::string nome, std::string documento) {
+        setNome(nome);
         setDocumento(documento);
     }
 
-    ~Cliente() {}
+    virtual ~Pessoa() {}
 
-    std::string getNomeCompleto() const { return nomeCompleto; }
+    std::string getNome() const { return nome; }
     std::string getDocumento() const { return documento; }
 
-    void setNomeCompleto(std::string nome) { nomeCompleto = nome; }
-    void setDocumento(std::string doc) { documento = doc; }
+    void setNome(std::string nome) { this->nome = nome; }
+    void setDocumento(std::string doc) { this->documento = doc; }
+};
+
+class Cliente : public Pessoa {
+public:
+    Cliente(std::string nome, std::string documento) : Pessoa(nome, documento) {}
 };
 
 class SistemaClientes {
@@ -39,26 +44,23 @@ public:
     }
 };
 
-class Vendedor {
+class Vendedor : public Pessoa {
 private:
-    std::string nome;
     std::string login;
     std::string senha;
 
 public:
-    Vendedor(std::string nome, std::string login, std::string senha) {
-        setNomeVendedor(nome);
+    Vendedor(std::string nome, std::string documento, std::string login, std::string senha)
+        : Pessoa(nome, documento) {
         setLogin(login);
         setSenha(senha);
     }
 
     ~Vendedor() {}
 
-    std::string getNomeVendedor() const { return nome; }
     std::string getLogin() const { return login; }
     std::string getSenha() const { return senha; }
 
-    void setNomeVendedor(std::string nomeVendedor) { nome = nomeVendedor; }
     void setLogin(std::string l) { login = l; }
     void setSenha(std::string s) { senha = s; }
 };
@@ -90,7 +92,7 @@ public:
         for (Vendedor& vendedor : vendedores) {
             if (vendedor.getLogin() == login) {
                 if (vendedor.getSenha() == senha) {
-                    std::cout << "Bem-Vindo, " << vendedor.getNomeVendedor() << "!\n";
+                    std::cout << "Bem-Vindo, " << vendedor.getNome() << "!\n";
                 } else {
                     std::cout << "ERRO: senha incorreta!\n";
                 }
@@ -187,9 +189,9 @@ int main() {
     sistemaClientes.cadastrarCliente(cliente3);
 
     // Cadastro de vendedores
-    Vendedor vendedor1("Carlos Mendes", "carlos123", "senha456");
-    Vendedor vendedor2("Ana Paula", "ana2023", "minhasenha");
-    Vendedor vendedor3("Carlos Mendes", "carlos123", "senha456"); // duplicado
+    Vendedor vendedor1("Carlos Mendes", "001", "carlos123", "senha456");
+    Vendedor vendedor2("Ana Paula", "002", "ana2023", "minhasenha");
+    Vendedor vendedor3("Carlos Mendes", "001", "carlos123", "senha456"); // duplicado
 
     std::cout << "\n--- Cadastro de Vendedores ---\n";
     sistemaVendedores.cadastrarVendedor(vendedor1);
