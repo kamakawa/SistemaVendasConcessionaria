@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 class Pessoa {
 private:
@@ -118,6 +120,7 @@ public:
     void setNomeMoto(std::string nome) { nomeMoto = nome; }
 };
 
+
 // Singleton
 class GerenciadorDriveTech {
 private:
@@ -147,74 +150,152 @@ public:
                     std::cout << "Bem-Vindo, " << vendedor.getNome() << "!\n";
                     return true;
                 }
-                std::cout << "ERRO: Senha incorreta!\n";
+                std::cout << "Senha incorreta!\n";
                 return false;
             }
         }
-        std::cout << "ERRO: Login incorreto!\n";
+        std::cout << "Login não encontrado!\n";
         return false;
     }
 
     void cadastrarVendedor(const Vendedor& novoVendedor) {
         for (const Vendedor& vendedor : vendedores) {
             if (vendedor.getLogin() == novoVendedor.getLogin()) {
-                std::cout << "ERRO: Vendedor já cadastrado\n";
+                std::cout << "Vendedor já cadastrado!\n";
                 return;
             }
         }
         vendedores.push_back(novoVendedor);
-        std::cout << "Vendedor " << novoVendedor.getNome() << " cadastrado com sucesso!\n";
+        std::cout << " Vendedor cadastrado com sucesso!\n" << "Bem-Vindo ao time!" << std::endl;
     }
 
     void cadastrarCliente(const Cliente& novoCliente) {
         for (const Cliente& cliente : clientes) {
             if (cliente.getDocumento() == novoCliente.getDocumento()) {
-                std::cout << "ERRO: Cliente já cadastrado\n";
+                std::cout << "Cliente já cadastrado!\n";
                 return;
             }
         }
         clientes.push_back(novoCliente);
-        std::cout << "Cliente " << novoCliente.getNome() << " cadastrado com sucesso!\n";
+        std::cout << "Cliente cadastrado com sucesso!\n";
     }
 
-    void adicionarVeiculo(Veiculo* veiculo) {
-        estoque.push_back(veiculo);
-        std::cout << "Veículo " << veiculo->getModelo() << " adicionado ao estoque!\n";
+    void carregarEstoqueCSV(const std::string& nomeArquivo) {
+    std::ifstream arquivo(nomeArquivo);
+    std::string linha;
+
+    if (!arquivo.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo: " << nomeArquivo << "\n";
+        return;
     }
+
+    std::getline(arquivo, linha); // Ignora o cabeçalho
+
+    // Limpa o estoque anterior
+    for (Veiculo* v : estoque) {
+            delete v;
+        }
+        estoque.clear();
+
+        while (std::getline(arquivo, linha)) {
+            std::stringstream ss(linha);
+            std::string tipo, modelo, anoStr, valorStr, cor;
+
+            std::getline(ss, tipo, ',');
+            std::getline(ss, modelo, ',');
+            std::getline(ss, anoStr, ',');
+            std::getline(ss, valorStr, ',');
+            std::getline(ss, cor, ',');
+
+            int ano = std::stoi(anoStr);
+            double valor = std::stod(valorStr);
+
+            if (tipo == "Carro") {
+                estoque.push_back(new Carro(modelo, modelo, cor, valor, ano));
+            } else if (tipo == "Moto") {
+                estoque.push_back(new Moto(modelo, modelo, cor, valor, ano));
+            }
+        }
+
+        std::cout << "Estoque carregado com sucesso a partir de " << nomeArquivo << "\n";
+    }
+
+    void listarVeiculos() {
+        carregarEstoqueCSV("estoque.csv");
+
+        std::cout << "\n Veículos no estoque:\n";
+        for (Veiculo* v : estoque) {
+            std::cout << "- " << v->Tipo() << ": " << v->getModelo()
+                    << " (" << v->getCor() << ", " << v->getAno()
+                    << ") - R$" << v->getValor() << "\n";
+        }
+    }
+
 };
 
 GerenciadorDriveTech* GerenciadorDriveTech::instancia = nullptr;
 
 int main() {
     GerenciadorDriveTech* sistema = GerenciadorDriveTech::obterInstancia();
+    sistema->carregarEstoqueCSV("estoque.csv");
+    //Iago aqui criei um mini menu no terminal só para teste para ver se a lógica está correta
+    int opcao;
 
-    std::cout << "\n--- Cadastro de Clientes ---\n";
-    sistema->cadastrarCliente(Cliente("Maria Alves", "123456789"));
-    sistema->cadastrarCliente(Cliente("João Silva", "987654321"));
-    sistema->cadastrarCliente(Cliente("Maria Alves", "123456789")); // duplicado
+    do {
+        std::cout << "\n=== MENU DRIVE TECH ===\n";
+        std::cout << "1. Cadastrar Cliente\n";
+        std::cout << "2. Cadastrar Vendedor\n";
+        std::cout << "3. Login de Vendedor\n";
+        std::cout << "4. Listar Veículos\n";
+        std::cout << "5. Sair\n";
+        std::cout << "Escolha uma opção: ";
+        std::cin >> opcao;
+        std::cin.ignore(); // Limpa buffer
 
-    std::cout << "\n--- Cadastro de Vendedores ---\n";
-    sistema->cadastrarVendedor(Vendedor("Carlos Mendes", "001", "carlos123", "senha456"));
-    sistema->cadastrarVendedor(Vendedor("Ana Paula", "002", "ana2023", "minhasenha"));
-    sistema->cadastrarVendedor(Vendedor("Carlos Mendes", "001", "carlos123", "senha456")); // duplicado
+        switch (opcao) {
+            case 1: {
+                std::string nome, doc;
+                std::cout << "Nome do cliente: ";
+                std::getline(std::cin, nome);
+                std::cout << "Documento: ";
+                std::getline(std::cin, doc);
+                sistema->cadastrarCliente(Cliente(nome, doc));
+                break;
+            }
+            case 2: {
+                std::string nome, doc, login, senha;
+                std::cout << "Nome do vendedor: ";
+                std::getline(std::cin, nome);
+                std::cout << "Documento: ";
+                std::getline(std::cin, doc);
+                std::cout << "Login: ";
+                std::getline(std::cin, login);
+                std::cout << "Senha: ";
+                std::getline(std::cin, senha);
+                sistema->cadastrarVendedor(Vendedor(nome, doc, login, senha));
+                break;
+            }
+            case 3: {
+                std::string login, senha;
+                std::cout << "Login: ";
+                std::getline(std::cin, login);
+                std::cout << "Senha: ";
+                std::getline(std::cin, senha);
+                sistema->autenticar(login, senha);
+                break;
+            }
+            
+            case 4:
+                sistema->listarVeiculos();
+                break;
+            case 5:
+                std::cout << "Encerrando o sistema...\n";
+                break;
+            default:
+                std::cout << "Opção inválida!\n";
+        }
 
-    std::cout << "\n--- Teste de Login ---\n";
-    sistema->autenticar("carlos123", "senha456"); // sucesso
-    sistema->autenticar("carlos123", "errada");   // senha incorreta
-    sistema->autenticar("naoexiste", "1234");     // login incorreto
-
-    std::cout << "\n--- Cadastro de Veículo ---\n";
-    Carro* carro1 = new Carro("Fiat Pulse", "Pulse Drive", "Vermelho", 95000.0, 2023);
-    sistema->adicionarVeiculo(carro1);
-
-    std::cout << "Nome: " << carro1->getNomeCarro() << "\n";
-    std::cout << "Modelo: " << carro1->getModelo() << "\n";
-    std::cout << "Cor: " << carro1->getCor() << "\n";
-    std::cout << "Ano: " << carro1->getAno() << "\n";
-    std::cout << "Valor: R$" << carro1->getValor() << "\n";
-    std::cout << "Tipo: " << carro1->Tipo() << "\n";
-
-    delete carro1; // limpeza de memória
+    } while (opcao != 5);
 
     return 0;
 }
