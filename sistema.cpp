@@ -27,23 +27,6 @@ public:
     Cliente(std::string nome, std::string documento) : Pessoa(nome, documento) {}
 };
 
-class SistemaClientes {
-private:
-    std::vector<Cliente> clientes;
-
-public:
-    void cadastrarCliente(const Cliente& novoCliente) {
-        for (const Cliente& cliente : clientes) {
-            if (cliente.getDocumento() == novoCliente.getDocumento()) {
-                std::cout << "ERRO: Cliente já cadastrado\n";
-                return;
-            }
-        }
-        clientes.push_back(novoCliente);
-        std::cout << "Cadastro bem-sucedido!\n";
-    }
-};
-
 class Vendedor : public Pessoa {
 private:
     std::string login;
@@ -63,44 +46,6 @@ public:
 
     void setLogin(std::string l) { login = l; }
     void setSenha(std::string s) { senha = s; }
-};
-
-class SistemaVendedor {
-private:
-    std::vector<Vendedor> vendedores;
-
-public:
-    void cadastrarVendedor(const Vendedor& novoVendedor) {
-        for (const Vendedor& vendedor : vendedores) {
-            if (vendedor.getLogin() == novoVendedor.getLogin()) {
-                std::cout << "ERRO: Vendedor já cadastrado\n";
-                return;
-            }
-        }
-        vendedores.push_back(novoVendedor);
-        std::cout << "Cadastro bem-sucedido!\nSeja Bem-Vindo(a) ao time!\n";
-    }
-
-    std::vector<Vendedor>& getVendedores() {
-        return vendedores;
-    }
-};
-
-class Login {
-public:
-    void verificar(std::string login, std::string senha, std::vector<Vendedor>& vendedores) {
-        for (Vendedor& vendedor : vendedores) {
-            if (vendedor.getLogin() == login) {
-                if (vendedor.getSenha() == senha) {
-                    std::cout << "Bem-Vindo, " << vendedor.getNome() << "!\n";
-                } else {
-                    std::cout << "ERRO: senha incorreta!\n";
-                }
-                return;
-            }
-        }
-        std::cout << "ERRO: Login incorreto!\n";
-    }
 };
 
 class Veiculo {
@@ -173,46 +118,103 @@ public:
     void setNomeMoto(std::string nome) { nomeMoto = nome; }
 };
 
-int main() {
-    SistemaClientes sistemaClientes;
-    SistemaVendedor sistemaVendedores;
-    Login sistemaLogin;
+// Singleton
+class GerenciadorDriveTech {
+private:
+    static GerenciadorDriveTech* instancia;
 
-    // Cadastro de clientes
-    Cliente cliente1("Maria Alves", "123456789");
-    Cliente cliente2("João Silva", "987654321");
-    Cliente cliente3("Maria Alves", "123456789"); // duplicado
+    std::vector<Vendedor> vendedores;
+    std::vector<Veiculo*> estoque;
+    std::vector<Cliente> clientes;
+
+    GerenciadorDriveTech() {}
+
+public:
+    GerenciadorDriveTech(const GerenciadorDriveTech&) = delete;
+    GerenciadorDriveTech& operator=(const GerenciadorDriveTech&) = delete;
+
+    static GerenciadorDriveTech* obterInstancia() {
+        if (instancia == nullptr) {
+            instancia = new GerenciadorDriveTech();
+        }
+        return instancia;
+    }
+
+    bool autenticar(const std::string& login, const std::string& senha) {
+        for (const Vendedor& vendedor : vendedores) {
+            if (vendedor.getLogin() == login) {
+                if (vendedor.getSenha() == senha) {
+                    std::cout << "Bem-Vindo, " << vendedor.getNome() << "!\n";
+                    return true;
+                }
+                std::cout << "ERRO: Senha incorreta!\n";
+                return false;
+            }
+        }
+        std::cout << "ERRO: Login incorreto!\n";
+        return false;
+    }
+
+    void cadastrarVendedor(const Vendedor& novoVendedor) {
+        for (const Vendedor& vendedor : vendedores) {
+            if (vendedor.getLogin() == novoVendedor.getLogin()) {
+                std::cout << "ERRO: Vendedor já cadastrado\n";
+                return;
+            }
+        }
+        vendedores.push_back(novoVendedor);
+        std::cout << "Vendedor " << novoVendedor.getNome() << " cadastrado com sucesso!\n";
+    }
+
+    void cadastrarCliente(const Cliente& novoCliente) {
+        for (const Cliente& cliente : clientes) {
+            if (cliente.getDocumento() == novoCliente.getDocumento()) {
+                std::cout << "ERRO: Cliente já cadastrado\n";
+                return;
+            }
+        }
+        clientes.push_back(novoCliente);
+        std::cout << "Cliente " << novoCliente.getNome() << " cadastrado com sucesso!\n";
+    }
+
+    void adicionarVeiculo(Veiculo* veiculo) {
+        estoque.push_back(veiculo);
+        std::cout << "Veículo " << veiculo->getModelo() << " adicionado ao estoque!\n";
+    }
+};
+
+GerenciadorDriveTech* GerenciadorDriveTech::instancia = nullptr;
+
+int main() {
+    GerenciadorDriveTech* sistema = GerenciadorDriveTech::obterInstancia();
 
     std::cout << "\n--- Cadastro de Clientes ---\n";
-    sistemaClientes.cadastrarCliente(cliente1);
-    sistemaClientes.cadastrarCliente(cliente2);
-    sistemaClientes.cadastrarCliente(cliente3);
-
-    // Cadastro de vendedores
-    Vendedor vendedor1("Carlos Mendes", "001", "carlos123", "senha456");
-    Vendedor vendedor2("Ana Paula", "002", "ana2023", "minhasenha");
-    Vendedor vendedor3("Carlos Mendes", "001", "carlos123", "senha456"); // duplicado
+    sistema->cadastrarCliente(Cliente("Maria Alves", "123456789"));
+    sistema->cadastrarCliente(Cliente("João Silva", "987654321"));
+    sistema->cadastrarCliente(Cliente("Maria Alves", "123456789")); // duplicado
 
     std::cout << "\n--- Cadastro de Vendedores ---\n";
-    sistemaVendedores.cadastrarVendedor(vendedor1);
-    sistemaVendedores.cadastrarVendedor(vendedor2);
-    sistemaVendedores.cadastrarVendedor(vendedor3);
+    sistema->cadastrarVendedor(Vendedor("Carlos Mendes", "001", "carlos123", "senha456"));
+    sistema->cadastrarVendedor(Vendedor("Ana Paula", "002", "ana2023", "minhasenha"));
+    sistema->cadastrarVendedor(Vendedor("Carlos Mendes", "001", "carlos123", "senha456")); // duplicado
 
-    // Teste de login
     std::cout << "\n--- Teste de Login ---\n";
-    sistemaLogin.verificar("carlos123", "senha456", sistemaVendedores.getVendedores()); // sucesso
-    sistemaLogin.verificar("carlos123", "errada", sistemaVendedores.getVendedores());   // senha incorreta
-    sistemaLogin.verificar("naoexiste", "1234", sistemaVendedores.getVendedores());     // login incorreto
+    sistema->autenticar("carlos123", "senha456"); // sucesso
+    sistema->autenticar("carlos123", "errada");   // senha incorreta
+    sistema->autenticar("naoexiste", "1234");     // login incorreto
 
-    // Cadastro de veículo
     std::cout << "\n--- Cadastro de Veículo ---\n";
-    Carro carro1("Fiat Pulse", "Pulse Drive", "Vermelho", 95000.0, 2023);
-    std::cout << "Nome: " << carro1.getNomeCarro() << "\n";
-    std::cout << "Modelo: " << carro1.getModelo() << "\n";
-    std::cout << "Cor: " << carro1.getCor() << "\n";
-    std::cout << "Ano: " << carro1.getAno() << "\n";
-    std::cout << "Valor: R$" << carro1.getValor() << "\n";
-    std::cout << "Tipo: " << carro1.Tipo() << "\n";
+    Carro* carro1 = new Carro("Fiat Pulse", "Pulse Drive", "Vermelho", 95000.0, 2023);
+    sistema->adicionarVeiculo(carro1);
+
+    std::cout << "Nome: " << carro1->getNomeCarro() << "\n";
+    std::cout << "Modelo: " << carro1->getModelo() << "\n";
+    std::cout << "Cor: " << carro1->getCor() << "\n";
+    std::cout << "Ano: " << carro1->getAno() << "\n";
+    std::cout << "Valor: R$" << carro1->getValor() << "\n";
+    std::cout << "Tipo: " << carro1->Tipo() << "\n";
+
+    delete carro1; // limpeza de memória
 
     return 0;
 }
