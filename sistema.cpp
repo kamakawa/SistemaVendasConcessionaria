@@ -144,10 +144,42 @@ public:
     }
 
     bool autenticar(const std::string& login, const std::string& senha) {
+        int opc;
         for (const Vendedor& vendedor : vendedores) {
             if (vendedor.getLogin() == login) {
                 if (vendedor.getSenha() == senha) {
-                    std::cout << "Bem-Vindo, " << vendedor.getNome() << "!\n";
+                    do{
+                        std::cout << "Olá, " << vendedor.getNome() << std::endl;
+                        std::cout << "\n======MENU VENDEDOR========" << std::endl;
+                        std::cout << "1. Listar Veículos no estoque\n";
+                        std::cout << "2. Buscar veículos disponíveis\n";
+                        std::cout << "3. Vender\n";
+                        std::cout << "4. Sair\n";
+                        std::cout << "Escolha uma opção: ";
+                        std::cin >> opc;
+
+                        switch (opc) {
+                            case 1: {
+                                listarVeiculos();
+                                break;
+                            }
+                            case 2: {
+                                buscarVeiculos();
+                                break;
+                            }
+                            case 3: {
+                                //Irei implementar...
+                                break;
+                            }
+                        
+                            case 4:
+                                std::cout << "Saindo... Até breve " << vendedor.getNome() << std::endl;
+                                break;
+                            default:
+                                std::cout << "Opção inválida!\n";
+                        }
+
+                    }while(opc != 4);
                     return true;
                 }
                 std::cout << "Senha incorreta!\n";
@@ -231,6 +263,45 @@ public:
         }
     }
 
+    void buscarVeiculos(){
+        carregarEstoqueCSV("estoque.csv");
+
+        std::string tipo;
+        std::string modelo;
+        std::string cor;
+        int ano;
+        bool encontrado = false;    //Para ajudar no if-else
+
+        std::cout << "Digite o tipo: " << std::endl;
+        std::cin >> tipo;
+        std::cout << "Digite o modelo: " << std::endl;
+        std::cin >> modelo;
+        std::cout << "Digite a cor: " << std::endl;
+        std::cin >> cor;
+        std::cout << "Digite o ano: " << std::endl;
+        std::cin >> ano;
+
+        for (Veiculo* v : estoque) {
+            for (Veiculo* v : estoque) {
+                if (v->Tipo() == tipo &&
+                    v->getModelo() == modelo &&
+                    v->getCor() == cor &&
+                    v->getAno() == ano) {
+                    std::cout << "\nVeículo disponível:\n";
+                    std::cout << "- " << v->Tipo() << ": " << v->getModelo()
+                            << " (" << v->getCor() << ", " << v->getAno()
+                            << ") - R$" << v->getValor() << "\n";
+                    encontrado = true;
+                    return;
+                }
+            }
+
+            if (!encontrado) {
+                std::cout << "Veículo indisponível\n";
+            }
+        }
+    }
+
 };
 
 GerenciadorDriveTech* GerenciadorDriveTech::instancia = nullptr;
@@ -246,8 +317,7 @@ int main() {
         std::cout << "1. Cadastrar Cliente\n";
         std::cout << "2. Cadastrar Vendedor\n";
         std::cout << "3. Login de Vendedor\n";
-        std::cout << "4. Listar Veículos\n";
-        std::cout << "5. Sair\n";
+        std::cout << "4. Sair\n";
         std::cout << "Escolha uma opção: ";
         std::cin >> opcao;
         std::cin.ignore(); // Limpa buffer
@@ -286,16 +356,13 @@ int main() {
             }
             
             case 4:
-                sistema->listarVeiculos();
-                break;
-            case 5:
                 std::cout << "Encerrando o sistema...\n";
                 break;
             default:
                 std::cout << "Opção inválida!\n";
         }
 
-    } while (opcao != 5);
+    } while (opcao != 4);
 
     return 0;
 }
