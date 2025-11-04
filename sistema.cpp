@@ -149,10 +149,12 @@ public:
             if (vendedor.getLogin() == login) {
                 if (vendedor.getSenha() == senha) {
                     do{
+                        //Iago, aqui criei um mini menu no terminal só para teste para ver se a lógica está correta
+                        //Funcionalidades apenas para o vendedor logado
                         std::cout << "Olá, " << vendedor.getNome() << std::endl;
                         std::cout << "\n======MENU VENDEDOR========" << std::endl;
                         std::cout << "1. Listar Veículos no estoque\n";
-                        std::cout << "2. Buscar veículos disponíveis\n";
+                        std::cout << "2. Consulta de estoque\n";
                         std::cout << "3. Vender\n";
                         std::cout << "4. Sair\n";
                         std::cout << "Escolha uma opção: ";
@@ -252,6 +254,51 @@ public:
         std::cout << "Estoque carregado com sucesso a partir de " << nomeArquivo << "\n";
     }
 
+    void venda(){
+        std::string nomeCliente;
+        std::string documentoCliente;
+        bool encontrarCliente = false;
+        bool disponibilidade;
+        int opc;
+
+        std::cout << "Digite o nome do cliente: " << std::endl;
+        std::cin >> nomeCliente;
+        std::cout << "Digite o número de algum documento válido: " << std::endl;
+        std::cin >> documentoCliente;
+
+        for (const Cliente& cliente : clientes){
+            if(cliente.getNome() == nomeCliente){
+                if(cliente.getDocumento() == documentoCliente){
+                    encontrarCliente = true;
+                    std::cout << "Cliente encontrado!" << std::endl;
+                    std::cout << "Bem-Vindo " << cliente.getNome() << std::endl;
+
+                    disponibilidade = buscarVeiculos();
+                }
+            }
+        }
+
+        if(encontrarCliente == false){
+            std::cout << "Cliente não encontrado :(" << std::endl;
+            std::cout << "Verifique se o cliente tem cadastro1" << std::endl;
+            std::cout << "Deseja cadastrar o cliente?" << std::endl;
+                std::cout << "1. Sim\n";
+                std::cout << "2. Não\n";
+                std::cin >> opc;
+            
+            switch (opc){
+            case 1:
+                cadastrarCliente(Cliente(nomeCliente, documentoCliente));
+                break;
+            
+            case 2:
+                venda();
+            default:
+                break;
+            }
+        }
+    }
+
     void listarVeiculos() {
         carregarEstoqueCSV("estoque.csv");
 
@@ -263,15 +310,40 @@ public:
         }
     }
 
-    void buscarVeiculos(){
+    bool buscarVeiculos(){
         carregarEstoqueCSV("estoque.csv");
 
         std::string tipo;
         std::string modelo;
         std::string cor;
+        std::string filial;
         int ano;
+        int opc;
         bool encontrado = false;    //Para ajudar no if-else
 
+        std::cout << "Filial: " << std::endl;
+            do{
+                std::cout << "1. Curitiba" << std::endl;
+                std::cout << "2. Maringá" << std::endl;
+                std::cout << "3. Londrina" << std::endl;
+                std::cin >> opc;
+            }while(opc > 3 || opc < 1);
+
+            switch (opc){
+            case 1:
+                filial = "Curitiba";
+                break;
+            
+            case 2:
+                filial = "Maringá";
+                break;
+
+            case 3:
+                filial = "Londrina";
+                break;
+            default:
+                break;
+            }
         std::cout << "Digite o tipo: " << std::endl;
         std::cin >> tipo;
         std::cout << "Digite o modelo: " << std::endl;
@@ -282,24 +354,24 @@ public:
         std::cin >> ano;
 
         for (Veiculo* v : estoque) {
-            for (Veiculo* v : estoque) {
-                if (v->Tipo() == tipo &&
-                    v->getModelo() == modelo &&
-                    v->getCor() == cor &&
-                    v->getAno() == ano) {
-                    std::cout << "\nVeículo disponível:\n";
-                    std::cout << "- " << v->Tipo() << ": " << v->getModelo()
-                            << " (" << v->getCor() << ", " << v->getAno()
-                            << ") - R$" << v->getValor() << "\n";
-                    encontrado = true;
-                    return;
-                }
-            }
-
-            if (!encontrado) {
-                std::cout << "Veículo indisponível\n";
+            if (v->Tipo() == tipo &&
+                v->getModelo() == modelo &&
+                v->getCor() == cor &&
+                v->getAno() == ano) {
+                std::cout << "\nStatus: Disponível:\n";
+                std::cout << "- " << v->Tipo() << ": " << v->getModelo()
+                        << " (" << v->getCor() << ", " << v->getAno()
+                        << ") - R$" << v->getValor() << "\n";
+                encontrado = true;
+                return encontrado;
             }
         }
+
+        if (!encontrado) {
+            std::cout << "Veículo indisponível\n";
+            return encontrado;
+        }
+
     }
 
 };
@@ -309,7 +381,7 @@ GerenciadorDriveTech* GerenciadorDriveTech::instancia = nullptr;
 int main() {
     GerenciadorDriveTech* sistema = GerenciadorDriveTech::obterInstancia();
     sistema->carregarEstoqueCSV("estoque.csv");
-    //Iago aqui criei um mini menu no terminal só para teste para ver se a lógica está correta
+    //Iago, aqui criei um mini menu no terminal só para teste para ver se a lógica está correta
     int opcao;
 
     do {
