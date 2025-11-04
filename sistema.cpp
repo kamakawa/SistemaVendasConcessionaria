@@ -170,7 +170,7 @@ public:
                                 break;
                             }
                             case 3: {
-                                //Irei implementar...
+                                venda();
                                 break;
                             }
                         
@@ -254,50 +254,128 @@ public:
         std::cout << "Estoque carregado com sucesso a partir de " << nomeArquivo << "\n";
     }
 
-    void venda(){
-        std::string nomeCliente;
-        std::string documentoCliente;
-        bool encontrarCliente = false;
-        bool disponibilidade;
-        int opc;
+    void venda() {
+    std::string nomeCliente, documentoCliente;
+    bool clienteEncontrado = false;
+    Cliente clienteSelecionado("", "");
+    int opc;
 
-        std::cout << "Digite o nome do cliente: " << std::endl;
-        std::cin >> nomeCliente;
-        std::cout << "Digite o número de algum documento válido: " << std::endl;
-        std::cin >> documentoCliente;
+    std::cout << "\n=== REGISTRO DE VENDA ===\n";
+    std::cin.ignore();
+    std::cout << "Digite o nome do cliente: ";
+    std::getline(std::cin, nomeCliente);
+    std::cout << "Digite o número de algum documento válido (CPF/CNPJ): ";
+    std::getline(std::cin, documentoCliente);
 
-        for (const Cliente& cliente : clientes){
-            if(cliente.getNome() == nomeCliente){
-                if(cliente.getDocumento() == documentoCliente){
-                    encontrarCliente = true;
-                    std::cout << "Cliente encontrado!" << std::endl;
-                    std::cout << "Bem-Vindo " << cliente.getNome() << std::endl;
-
-                    disponibilidade = buscarVeiculos();
-                }
-            }
-        }
-
-        if(encontrarCliente == false){
-            std::cout << "Cliente não encontrado :(" << std::endl;
-            std::cout << "Verifique se o cliente tem cadastro1" << std::endl;
-            std::cout << "Deseja cadastrar o cliente?" << std::endl;
-                std::cout << "1. Sim\n";
-                std::cout << "2. Não\n";
-                std::cin >> opc;
-            
-            switch (opc){
-            case 1:
-                cadastrarCliente(Cliente(nomeCliente, documentoCliente));
-                break;
-            
-            case 2:
-                venda();
-            default:
-                break;
-            }
+    // Verifica se o cliente já está cadastrado
+    for (const Cliente& c : clientes) {
+        if (c.getNome() == nomeCliente && c.getDocumento() == documentoCliente) {
+            clienteEncontrado = true;
+            clienteSelecionado = c;
+            break;
         }
     }
+
+    // Se o cliente não existir, oferece cadastro
+    if (!clienteEncontrado) {
+        std::cout << "Cliente não encontrado.\nDeseja cadastrar? (1-Sim / 2-Não): ";
+        std::cin >> opc;
+
+        if (opc == 1) {
+            cadastrarCliente(Cliente(nomeCliente, documentoCliente));
+            clienteSelecionado = Cliente(nomeCliente, documentoCliente);
+        } else {
+            std::cout << "Operação cancelada.\n";
+            return;
+        }
+    }
+
+    // Escolha da filial
+    std::string filial;
+    do {
+        std::cout << "\nSelecione a filial:\n";
+        std::cout << "1. Curitiba\n2. Maringá\n3. Londrina\nOpção: ";
+        std::cin >> opc;
+    } while (opc < 1 || opc > 3);
+
+    switch (opc) {
+        case 1: filial = "Curitiba"; break;
+        case 2: filial = "Maringá"; break;
+        case 3: filial = "Londrina"; break;
+    }
+
+    // Escolha do veículo
+    std::string tipo, modelo, cor;
+    int ano;
+    std::cout << "\nDigite o tipo de veículo (Carro/Moto): ";
+    std::cin >> tipo;
+    std::cout << "Modelo: ";
+    std::cin >> modelo;
+    std::cout << "Cor: ";
+    std::cin >> cor;
+    std::cout << "Ano: ";
+    std::cin >> ano;
+
+    // Verifica disponibilidade
+    Veiculo* veiculoSelecionado = nullptr;
+    int indiceRemover = -1;
+
+    for (size_t i = 0; i < estoque.size(); ++i) {
+        Veiculo* v = estoque[i];
+        if (v->Tipo() == tipo && v->getModelo() == modelo &&
+            v->getCor() == cor && v->getAno() == ano) {
+            veiculoSelecionado = v;
+            indiceRemover = static_cast<int>(i);
+            break;
+        }
+    }
+
+    if (!veiculoSelecionado) {
+        std::cout << "\nVeículo não encontrado ou indisponível.\n";
+        return;
+    }
+
+    std::cout << "\nVeículo disponível!\n";
+    std::cout << tipo << " " << modelo << " (" << cor << ", " << ano
+              << ") - R$" << veiculoSelecionado->getValor() << "\n";
+
+    std::cout << "Confirmar venda? (1-Sim / 2-Não): ";
+    std::cin >> opc;
+    if (opc != 1) {
+        std::cout << "Venda cancelada.\n";
+        return;
+    }
+
+    // Registra a venda no arquivo CSV
+    std::ofstream arquivo("vendas.csv", std::ios::app);
+    if (arquivo.is_open()) {
+        arquivo << clienteSelecionado.getNome() << ","
+                << clienteSelecionado.getDocumento() << ","
+                << filial << ","
+                << tipo << ","
+                << modelo << ","
+                << ano << ","
+                << veiculoSelecionado->getValor() << ","
+                << "Sem desconto,"
+                << veiculoSelecionado->getValor() << ","
+                << "À vista,"
+                << "Confirmada\n";
+        arquivo.close();
+    }
+
+    // Remove o veículo do estoque (em memória)
+    delete estoque[indiceRemover];
+    estoque.erase(estoque.begin() + indiceRemover);
+
+    std::cout << "\nVenda registrada com sucesso!\n";
+    std::cout << "Resumo:\n";
+    std::cout << "Cliente: " << clienteSelecionado.getNome() << "\n";
+    std::cout << "Filial: " << filial << "\n";
+    std::cout << "Veículo: " << tipo << " " << modelo << " (" << cor << ", " << ano << ")\n";
+    std::cout << "Valor: R$" << veiculoSelecionado->getValor() << "\n";
+    std::cout << "Status: Confirmada\n";
+}
+
 
     void listarVeiculos() {
         carregarEstoqueCSV("estoque.csv");
@@ -310,69 +388,43 @@ public:
         }
     }
 
-    bool buscarVeiculos(){
-        carregarEstoqueCSV("estoque.csv");
+    bool buscarVeiculos() {
+    carregarEstoqueCSV("estoque.csv");
 
-        std::string tipo;
-        std::string modelo;
-        std::string cor;
-        std::string filial;
-        int ano;
-        int opc;
-        bool encontrado = false;    //Para ajudar no if-else
+    std::string tipo, modelo, cor;
+    int ano;
+    bool encontrado = false;
 
-        std::cout << "Filial: " << std::endl;
-            do{
-                std::cout << "1. Curitiba" << std::endl;
-                std::cout << "2. Maringá" << std::endl;
-                std::cout << "3. Londrina" << std::endl;
-                std::cin >> opc;
-            }while(opc > 3 || opc < 1);
+    std::cout << "Digite o tipo de veículo (Carro/Moto): ";
+    std::cin >> tipo;
+    std::cout << "Modelo: ";
+    std::cin >> modelo;
+    std::cout << "Cor: ";
+    std::cin >> cor;
+    std::cout << "Ano: ";
+    std::cin >> ano;
 
-            switch (opc){
-            case 1:
-                filial = "Curitiba";
-                break;
-            
-            case 2:
-                filial = "Maringá";
-                break;
-
-            case 3:
-                filial = "Londrina";
-                break;
-            default:
-                break;
-            }
-        std::cout << "Digite o tipo: " << std::endl;
-        std::cin >> tipo;
-        std::cout << "Digite o modelo: " << std::endl;
-        std::cin >> modelo;
-        std::cout << "Digite a cor: " << std::endl;
-        std::cin >> cor;
-        std::cout << "Digite o ano: " << std::endl;
-        std::cin >> ano;
-
-        for (Veiculo* v : estoque) {
-            if (v->Tipo() == tipo &&
-                v->getModelo() == modelo &&
-                v->getCor() == cor &&
-                v->getAno() == ano) {
-                std::cout << "\nStatus: Disponível:\n";
-                std::cout << "- " << v->Tipo() << ": " << v->getModelo()
-                        << " (" << v->getCor() << ", " << v->getAno()
-                        << ") - R$" << v->getValor() << "\n";
-                encontrado = true;
-                return encontrado;
-            }
-        }
-
-        if (!encontrado) {
-            std::cout << "Veículo indisponível\n";
+    for (Veiculo* v : estoque) {
+        if (v->Tipo() == tipo &&
+            v->getModelo() == modelo &&
+            v->getCor() == cor &&
+            v->getAno() == ano) {
+            std::cout << "\nStatus: Disponível:\n";
+            std::cout << "- " << v->Tipo() << ": " << v->getModelo()
+                      << " (" << v->getCor() << ", " << v->getAno()
+                      << ") - R$" << v->getValor() << "\n";
+            encontrado = true;
             return encontrado;
         }
-
     }
+
+    if (!encontrado) {
+        std::cout << "Veículo indisponível\n";
+        return false;
+    }
+
+    return encontrado;
+}
 
 };
 
