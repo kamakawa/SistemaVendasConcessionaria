@@ -120,6 +120,40 @@ public:
     void setNomeMoto(std::string nome) { nomeMoto = nome; }
 };
 
+//classe para salvar o histórico de vendas
+class Venda {
+private:
+    std::string nomeCliente;
+    std::string documentoCliente;
+    std::string filial;
+    std::string tipoVeiculo;
+    std::string modeloVeiculo;
+    int anoVeiculo;
+    double valorOriginal;
+    std::string tipoDesconto;
+    double valorFinal;
+    std::string formaPagamento; // Falta adicionar isso no seu CSV e na função venda()
+    std::string status;
+
+public:
+    Venda(std::string nome, std::string doc, std::string fil, std::string tipoV, 
+          std::string modV, int anoV, double valOrig, std::string desc, 
+          double valFinal, std::string pag, std::string stat)
+        : nomeCliente(nome), documentoCliente(doc), filial(fil), tipoVeiculo(tipoV), 
+          modeloVeiculo(modV), anoVeiculo(anoV), valorOriginal(valOrig), 
+          tipoDesconto(desc), valorFinal(valFinal), formaPagamento(pag), status(stat) {}
+
+    // Getters
+    std::string getDocumentoCliente() const { return documentoCliente; }
+    // ... outros getters que você precisar para exibir o histórico
+    
+    std::string getResumo() const {
+        return "Veículo: " + tipoVeiculo + " " + modeloVeiculo + 
+               " (" + std::to_string(anoVeiculo) + ") | Valor Final: R$" + 
+               std::to_string(valorFinal) + " | Filial: " + filial;
+    }
+};
+
 //Strategy
 class DescontoStrategy {
 public:
@@ -176,6 +210,7 @@ private:
     std::vector<Vendedor> vendedores;
     std::vector<Veiculo*> estoque;
     std::vector<Cliente> clientes;
+    std::vector<Venda> historicoVendas;
 
     GerenciadorDriveTech() {}
 
@@ -203,8 +238,8 @@ public:
                         std::cout << "1. Listar Veículos no estoque\n";
                         std::cout << "2. Consulta de estoque\n";
                         std::cout << "3. Vender\n";
-                        std::cout << "4. Sair\n";
-                        std::cout << "Escolha uma opção: ";
+                        std::cout << "4. Histórico de vendas\n";
+                        std::cout << "5. Sair\n";
                         std::cin >> opc;
 
                         switch (opc) {
@@ -220,15 +255,18 @@ public:
                                 venda();
                                 break;
                             }
-                        
-                            case 4:
+                            case 4: {
+                                listarHistoricoVendas();
+                                break;
+                            }
+                            case 5:
                                 std::cout << "Saindo... Até breve " << vendedor.getNome() << std::endl;
                                 break;
                             default:
                                 std::cout << "Opção inválida!\n";
                         }
 
-                    }while(opc != 4);
+                    }while(opc != 5);
                     return true;
                 }
                 std::cout << "Senha incorreta!\n";
@@ -306,6 +344,7 @@ public:
         bool clienteEncontrado = false;
         Cliente clienteSelecionado("", "");
         int opc;
+        int opcHistorico;
 
         std::cout << "\n=== REGISTRO DE VENDA ===\n";
         std::cin.ignore();
@@ -337,6 +376,13 @@ public:
             }
         }
 
+        std::cout << "Deseja ver o Histórico de compras de " << nomeCliente << std::endl;
+        std::cout << "1. Sim\n" << "2. Não" << std::endl;
+        std::cin >> opcHistorico;
+
+        if(opcHistorico == 1){
+            listarHistoricoCliente(nomeCliente);
+        }
         // Escolha da filial
         std::string filial;
         do {
@@ -460,6 +506,55 @@ public:
         std::cout << "Desconto: " << tipoDesconto << "\n";
         std::cout << "Valor final: R$" << valorFinal << "\n";
         std::cout << "Status: Confirmada\n";
+
+        historicoVendas.push_back(
+            Venda(
+                clienteSelecionado.getNome(),
+                clienteSelecionado.getDocumento(),
+                filial,
+                tipo,
+                modelo,
+                ano,
+                valorOriginal,
+                tipoDesconto,
+                valorFinal,
+                "À vista",
+                "Confirmada"
+            )
+        );
+
+    }
+
+    void listarHistoricoVendas() {
+        if (historicoVendas.empty()) {
+            std::cout << "\nNenhuma venda registrada ainda.\n";
+            return;
+        }
+
+        std::cout << "\n=== HISTÓRICO DE VENDAS ===\n";
+        for (const Venda& v : historicoVendas) {
+            std::cout << v.getResumo() << "\n";
+        }
+    }
+
+    void listarHistoricoCliente(std::string docBusca) {
+        if (historicoVendas.empty()) {
+            std::cout << "\nNenhuma venda registrada ainda.\n";
+            return;
+        }
+
+        bool encontrado = false;
+        std::cout << "\n=== HISTÓRICO DO CLIENTE " << " ===\n";
+        for (const Venda& v : historicoVendas) {
+            if (v.getDocumentoCliente() == docBusca) {
+                std::cout << v.getResumo() << "\n";
+                encontrado = true;
+            }
+        }
+
+        if (!encontrado) {
+            std::cout << "Nenhuma venda encontrada para esse cliente.\n";
+        }
     }
 
     void atualizarEstoqueCSV(const std::string& nomeArquivo) {
