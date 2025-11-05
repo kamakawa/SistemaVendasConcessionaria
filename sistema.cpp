@@ -120,6 +120,53 @@ public:
     void setNomeMoto(std::string nome) { nomeMoto = nome; }
 };
 
+//Strategy
+class DescontoStrategy {
+public:
+    virtual double aplicarDesconto(double valor) const = 0;
+    virtual std::string getNome() const = 0;
+    virtual ~DescontoStrategy() {}
+};
+
+class SemDesconto : public DescontoStrategy {
+public:
+    double aplicarDesconto(double valor) const override {
+        return valor;
+    }
+    std::string getNome() const override {
+        return "Sem desconto";
+    }
+};
+
+class DescontoAVista : public DescontoStrategy {
+public:
+    double aplicarDesconto(double valor) const override {
+        return valor * 0.95; // 5% de desconto
+    }
+    std::string getNome() const override {
+        return "À vista (5%)";
+    }
+};
+
+class DescontoClienteFiel : public DescontoStrategy {
+public:
+    double aplicarDesconto(double valor) const override {
+        return valor * 0.90; // 10%
+    }
+    std::string getNome() const override {
+        return "Cliente fiel (10%)";
+    }
+};
+
+class DescontoPromocional : public DescontoStrategy {
+public:
+    double aplicarDesconto(double valor) const override {
+        return valor * 0.85; // 15%
+    }
+    std::string getNome() const override {
+        return "Promoção (15%)";
+    }
+};
 
 // Singleton
 class GerenciadorDriveTech {
@@ -346,20 +393,54 @@ public:
             return;
         }
 
+        // Escolha do tipo de desconto
+        DescontoStrategy* estrategia = nullptr;
+        int escolhaDesconto;
+
+        std::cout << "\nSelecione o tipo de desconto:\n";
+        std::cout << "1. Sem desconto\n";
+        std::cout << "2. À vista (5%)\n";
+        std::cout << "3. Cliente fiel (10%)\n";
+        std::cout << "4. Promoção (15%)\n";
+        std::cout << "Opção: ";
+        std::cin >> escolhaDesconto;
+
+        switch (escolhaDesconto) {
+            case 2:
+                estrategia = new DescontoAVista();
+                break;
+            case 3:
+                estrategia = new DescontoClienteFiel();
+                break;
+            case 4:
+                estrategia = new DescontoPromocional();
+                break;
+            default:
+                estrategia = new SemDesconto();
+                break;
+        }
+
+        double valorOriginal = veiculoSelecionado->getValor();
+        double valorFinal = estrategia->aplicarDesconto(valorOriginal);
+        std::string tipoDesconto = estrategia->getNome();
+
+        delete estrategia;
+
         // Registra a venda no arquivo CSV
         std::ofstream arquivo("vendas.csv", std::ios::app);
         if (arquivo.is_open()) {
             arquivo << clienteSelecionado.getNome() << ","
-                    << clienteSelecionado.getDocumento() << ","
-                    << filial << ","
-                    << tipo << ","
-                    << modelo << ","
-                    << ano << ","
-                    << veiculoSelecionado->getValor() << ","
-                    << "Sem desconto,"
-                    << veiculoSelecionado->getValor() << ","
-                    << "À vista,"
-                    << "Confirmada\n";
+            << clienteSelecionado.getDocumento() << ","
+            << filial << ","
+            << tipo << ","
+            << modelo << ","
+            << ano << ","
+            << valorOriginal << ","
+            << tipoDesconto << ","
+            << valorFinal << ","
+            << "À vista,"
+            << "Confirmada\n";
+
             arquivo.close();
         }
 
@@ -376,6 +457,8 @@ public:
         std::cout << "Filial: " << filial << "\n";
         std::cout << "Veículo: " << tipo << " " << modelo << " (" << cor << ", " << ano << ")\n";
         std::cout << "Valor: R$" << veiculoSelecionado->getValor() << "\n";
+        std::cout << "Desconto: " << tipoDesconto << "\n";
+        std::cout << "Valor final: R$" << valorFinal << "\n";
         std::cout << "Status: Confirmada\n";
     }
 
