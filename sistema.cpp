@@ -288,7 +288,7 @@ public:
                                 break;
                             }
                             case 5: {
-                                // [NOVO] pedir documento do cliente para filtrar
+                                // pedir documento do cliente para filtrar
                                 std::cin.ignore();
                                 std::string doc;
                                 std::cout << "Digite o documento do cliente (CPF/CNPJ) para filtrar: ";
@@ -298,7 +298,7 @@ public:
                             }
                             case 6:
                                 std::cout << "Saindo... Até breve " << vendedor.getNome() << std::endl;
-                                // [NOVO] limpa o vendedor ativo ao sair
+                                // limpa o vendedor ativo ao sair
                                 vendedorAtivoNome = "";
                                 vendedorAtivoLogin = "";
                                 break;
@@ -448,7 +448,7 @@ public:
                 case 3: filial = "Londrina"; break;
             }
 
-            // --- NOVA LÓGICA: sessão de compra com 1 ou mais veículos ---
+            // sessão de compra com 1 ou mais veículos
             std::vector<Veiculo*> comprados_ptrs; // para guardar ponteiros removidos do estoque (já deletados)
             struct ItemCompraTemp {
                 std::string tipo;
@@ -562,7 +562,6 @@ public:
                 return;
             }
 
-            // Agora: escolher tipo de desconto (o DescontoPromocional só será aplicado se carrinho.size() >= 2)
             DescontoStrategy* estrategiaEscolhida = nullptr;
             int escolhaDesconto;
             std::cout << "\nSelecione o tipo de desconto para essa compra (vai ser verificado e aplicado no total):\n";
@@ -573,7 +572,6 @@ public:
             std::cout << "Opção: ";
             std::cin >> escolhaDesconto;
 
-            // Lógica: se escolher 3 (fiel) verificamos histórico; se escolher 4 (promo) verificamos carrinho size >=2
             bool aplicouPromocionalNoTotal = false;
             switch (escolhaDesconto) {
                 case 2:
@@ -597,7 +595,6 @@ public:
                     break;
                 }
                 case 4: {
-                    // Promoção escolhida — só aplicamos se houver 2 ou mais veículos na compra
                     if (carrinho.size() >= 2) {
                         estrategiaEscolhida = new DescontoPromocional();
                         aplicouPromocionalNoTotal = true;
@@ -613,27 +610,23 @@ public:
                     break;
             }
 
-            // Se promocional válido: vamos aplicar 15% no total; se não, caso escolha outro desconto, aplicamos por item (cada um proporcionalmente)
             double totalFinal = 0.0;
             std::vector<double> valoresFinaisPorItem(carrinho.size(), 0.0);
 
             if (aplicouPromocionalNoTotal) {
                 double totalComDesconto = estrategiaEscolhida->aplicarDesconto(totalSemDesconto); // total * 0.85
-                // distribuir proporcionalmente entre itens para registrar cada linha com valor final
                 for (size_t i = 0; i < carrinho.size(); ++i) {
                     double proporcao = carrinho[i].valorOriginal / totalSemDesconto;
                     valoresFinaisPorItem[i] = totalComDesconto * proporcao;
                 }
                 totalFinal = totalComDesconto;
             } else {
-                // aplica a estratégia individualmente em cada item (caso SemDesconto, AVista ou ClienteFiel)
                 for (size_t i = 0; i < carrinho.size(); ++i) {
                     valoresFinaisPorItem[i] = estrategiaEscolhida->aplicarDesconto(carrinho[i].valorOriginal);
                     totalFinal += valoresFinaisPorItem[i];
                 }
             }
 
-            // Mostrar resumo final e confirmar pagamento
             std::cout << "\n=== RESUMO FINAL DA COMPRA ===\n";
             std::cout << "Cliente: " << clienteSelecionado.getNome() << " | Documento: " << documentoCliente << "\n";
             std::cout << "Filial: " << filial << " | Vendedor: " << vendedorAtivoNome << " | Data/Hora: " << dataHoraVenda << "\n";
@@ -660,7 +653,6 @@ public:
                 return;
             }
 
-            // Gravar cada venda individual no CSV e no historico em memória (cada linha por veículo)
             try {
                 std::ofstream arquivo("vendas.csv", std::ios::app);
                 if (!arquivo.is_open()) {
@@ -761,14 +753,12 @@ public:
     }
 
     void atualizarEstoqueCSV(const std::string& nomeArquivo) {
-        // [NOVO] try/catch para escrita do CSV do estoque
         try {
             std::ofstream arquivo(nomeArquivo);
             if (!arquivo.is_open()) {
                 throw std::runtime_error("Erro ao atualizar o arquivo de estoque.");
             }
 
-            // Cabeçalho (opcional, caso seu arquivo original tenha)
             arquivo << "Tipo,Modelo,Ano,Valor,Cor\n";
 
             for (Veiculo* v : estoque) {
@@ -788,7 +778,6 @@ public:
 
 
     void listarVeiculos() {
-        // [NOVO] tentativa de carregar estoque com catch já interna
         carregarEstoqueCSV("estoque.csv");
 
         std::cout << "\n Veículos no estoque:\n";
@@ -800,7 +789,6 @@ public:
     }
 
     bool buscarVeiculos() {
-        // [NOVO] try/catch geral
         try {
             carregarEstoqueCSV("estoque.csv");
 
