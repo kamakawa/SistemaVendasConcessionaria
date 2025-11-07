@@ -136,10 +136,10 @@ private:
     double valorOriginal;
     std::string tipoDesconto;
     double valorFinal;
-    std::string formaPagamento; // Falta adicionar isso no seu CSV e na função venda()
+    std::string formaPagamento;
     std::string status;
     std::string dataHora;
-    std::string nomeVendedor; // nome do vendedor que realizou a venda
+    std::string nomeVendedor;
 
 public:
     Venda(std::string nome, std::string doc, std::string fil, std::string tipoV,
@@ -186,37 +186,37 @@ public:
         return valor;
     }
     std::string getNome() const override {
-        return "Sem desconto";
-    }
-};
-
-class DescontoAVista : public DescontoStrategy {
-public:
-    double aplicarDesconto(double valor) const override {
-        return valor * 0.95; // 5% de desconto
-    }
-    std::string getNome() const override {
-        return "À vista (5%)";
+        return "Tarifa padrão";
     }
 };
 
 class DescontoClienteFiel : public DescontoStrategy {
-public:
+    public:
     double aplicarDesconto(double valor) const override {
-        return valor * 0.90; // 10%
+        return valor * 0.95; // 5%
     }
     std::string getNome() const override {
-        return "Cliente fiel (10%)";
+        return "Cliente Fidelidade (5%)";
     }
 };
 
 class DescontoPromocional : public DescontoStrategy {
-public:
+    public:
     double aplicarDesconto(double valor) const override {
-        return valor * 0.85; // 15%
+        return valor * 0.90; // 10%
     }
     std::string getNome() const override {
-        return "Promoção (15%)";
+        return "Promoção Especial (10%)";
+    }
+};
+
+class VendaCorporativa : public DescontoStrategy {
+public:
+    double aplicarDesconto(double valor) const override {
+        return valor * 0.85; // 15% de desconto
+    }
+    std::string getNome() const override {
+        return "Vendas Corporativas (15%)";
     }
 };
 
@@ -226,13 +226,21 @@ private:
     static GerenciadorDriveTech* instancia;
 
     std::vector<Vendedor> vendedores;
-    std::vector<Veiculo*> estoque;
+    std::vector<Veiculo*> estoqueLondrina;
+    std::vector<Veiculo*> estoqueMaringa;
+    std::vector<Veiculo*> estoqueCuritiba;
     std::vector<Cliente> clientes;
     std::vector<Venda> historicoVendas;
 
-    // [NOVO] armazena o vendedor que está logado atualmente (nome e login)
     std::string vendedorAtivoNome;
     std::string vendedorAtivoLogin;
+
+    std::vector<Veiculo*>& getEstoqueFilial(const std::string& filial) {
+        if (filial == "Londrina") return estoqueLondrina;
+        if (filial == "Maringá") return estoqueMaringa;
+        if (filial == "Curitiba") return estoqueCuritiba;
+        throw std::invalid_argument("Filial inválida: " + filial);
+    }
 
     GerenciadorDriveTech() : vendedorAtivoNome(""), vendedorAtivoLogin("") {}
 
@@ -252,13 +260,10 @@ public:
         for (const Vendedor& vendedor : vendedores) {
             if (vendedor.getLogin() == login) {
                 if (vendedor.getSenha() == senha) {
-                    // [NOVO] guarda o vendedor logado
                     vendedorAtivoNome = vendedor.getNome();
                     vendedorAtivoLogin = vendedor.getLogin();
 
                     do{
-                        //Iago, aqui criei um mini menu no terminal só para teste para ver se a lógica está correta
-                        //Funcionalidades apenas para o vendedor logado
                         std::cout << "Olá, " << vendedor.getNome() << std::endl;
                         std::cout << "\n======MENU VENDEDOR========" << std::endl;
                         std::cout << "1. Listar Veículos no estoque\n";
@@ -288,7 +293,6 @@ public:
                                 break;
                             }
                             case 5: {
-                                // pedir documento do cliente para filtrar
                                 std::cin.ignore();
                                 std::string doc;
                                 std::cout << "Digite o documento do cliente (CPF/CNPJ) para filtrar: ";
@@ -298,7 +302,6 @@ public:
                             }
                             case 6:
                                 std::cout << "Saindo... Até breve " << vendedor.getNome() << std::endl;
-                                // limpa o vendedor ativo ao sair
                                 vendedorAtivoNome = "";
                                 vendedorAtivoLogin = "";
                                 break;
@@ -348,14 +351,16 @@ public:
                 throw std::runtime_error("Erro ao abrir o arquivo: " + nomeArquivo);
             }
 
-            std::getline(arquivo, linha); // Ignora o cabeçalho
+            std::getline(arquivo, linha); 
 
-            // Limpa o estoque anterior
-            for (Veiculo* v : estoque) {
-                delete v;
-            }
-            estoque.clear();
+            for (Veiculo* v : estoqueLondrina) delete v;
+            for (Veiculo* v : estoqueMaringa) delete v;
+            for (Veiculo* v : estoqueCuritiba) delete v;
+            estoqueLondrina.clear();
+            estoqueMaringa.clear();
+            estoqueCuritiba.clear();
 
+            int contador = 0;
             while (std::getline(arquivo, linha)) {
                 if (linha.empty()) continue; // pula linhas vazias
                 std::stringstream ss(linha);
@@ -371,19 +376,33 @@ public:
                     int ano = std::stoi(anoStr);
                     double valor = std::stod(valorStr);
 
+                    Veiculo* novoVeiculo = nullptr;
                     if (tipo == "Carro") {
-                        estoque.push_back(new Carro(modelo, modelo, cor, valor, ano));
+                        novoVeiculo = new Carro(modelo, modelo, cor, valor, ano);
                     } else if (tipo == "Moto") {
-                        estoque.push_back(new Moto(modelo, modelo, cor, valor, ano));
+                        novoVeiculo = new Moto(modelo, modelo, cor, valor, ano);
+                    }
+
+                    if (novoVeiculo) {
+                        if (contador < 100) {
+                            estoqueLondrina.push_back(novoVeiculo);
+                        } else if (contador < 200) {
+                            estoqueMaringa.push_back(novoVeiculo);
+                        } else {
+                            estoqueCuritiba.push_back(novoVeiculo);
+                        }
+                        contador++;
                     }
                 } catch (const std::exception& e) {
                     std::cerr << "Linha de estoque com formato inválido: " << linha << " | erro: " << e.what() << "\n";
-                    // continuar lendo próximas linhas
                 }
             }
 
             arquivo.close();
-            std::cout << "Estoque carregado com sucesso a partir de " << nomeArquivo << "\n";
+            std::cout << "Estoque carregado com sucesso!\n";
+            std::cout << "Londrina: " << estoqueLondrina.size() << " veículos\n";
+            std::cout << "Maringá: " << estoqueMaringa.size() << " veículos\n";
+            std::cout << "Curitiba: " << estoqueCuritiba.size() << " veículos\n";
         } catch (const std::exception& e) {
             std::cerr << "Erro em carregarEstoqueCSV: " << e.what() << "\n";
         }
@@ -404,7 +423,6 @@ public:
             std::cout << "Digite o número de algum documento válido (CPF/CNPJ): ";
             std::getline(std::cin, documentoCliente);
 
-            // Verifica se o cliente já está cadastrado
             for (const Cliente& c : clientes) {
                 if (c.getNome() == nomeCliente && c.getDocumento() == documentoCliente) {
                     clienteEncontrado = true;
@@ -413,7 +431,6 @@ public:
                 }
             }
 
-            // Se o cliente não existir, oferece cadastro
             if (!clienteEncontrado) {
                 std::cout << "Cliente não encontrado.\nDeseja cadastrar? (1-Sim / 2-Não): ";
                 std::cin >> opc;
@@ -432,9 +449,9 @@ public:
             std::cin >> opcHistorico;
 
             if(opcHistorico == 1){
-                listarHistoricoCliente(documentoCliente); // [NOVO] passa documento (CPF/CNPJ)
+                listarHistoricoCliente(documentoCliente);
             }
-            // Escolha da filial
+            
             std::string filial;
             do {
                 std::cout << "\nSelecione a filial:\n";
@@ -448,8 +465,18 @@ public:
                 case 3: filial = "Londrina"; break;
             }
 
-            // sessão de compra com 1 ou mais veículos
-            std::vector<Veiculo*> comprados_ptrs; // para guardar ponteiros removidos do estoque (já deletados)
+            std::string formaPagamento;
+            int opcPagamento;
+            std::cout << "\nSelecione a forma de pagamento:\n";
+            std::cout << "1. À vista\n2. Parcelado\nOpção: ";
+            std::cin >> opcPagamento;
+            
+            if (opcPagamento == 1) {
+                formaPagamento = "À vista";
+            } else {
+                formaPagamento = "Parcelado";
+            }
+
             struct ItemCompraTemp {
                 std::string tipo;
                 std::string modelo;
@@ -460,7 +487,6 @@ public:
             std::vector<ItemCompraTemp> carrinho;
             double totalSemDesconto = 0.0;
 
-            // obtem timestamp único para toda a sessão de compra
             auto agora = std::chrono::system_clock::now();
             std::time_t tempoAtual = std::chrono::system_clock::to_time_t(agora);
             std::string dataHoraVenda = std::ctime(&tempoAtual);
@@ -468,25 +494,25 @@ public:
 
             bool continuar = true;
             while (continuar) {
-                // Escolha do veículo
                 std::string tipo, modelo, cor;
                 int ano;
                 std::cout << "\nDigite o tipo de veículo (Carro/Moto): ";
                 std::cin >> tipo;
-                std::cin.ignore(); // limpa buffer
+                std::cin.ignore(); 
                 std::cout << "Modelo: ";
-                std::getline(std::cin, modelo); // lê incluindo espaços
+                std::getline(std::cin, modelo); 
                 std::cout << "Cor: ";
-                std::getline(std::cin, cor);    // lê incluindo espaços
+                std::getline(std::cin, cor);    
                 std::cout << "Ano: ";
                 std::cin >> ano;
 
-                // Verifica disponibilidade
                 Veiculo* veiculoSelecionado = nullptr;
                 int indiceRemover = -1;
 
-                for (size_t i = 0; i < estoque.size(); ++i) {
-                    Veiculo* v = estoque[i];
+                std::vector<Veiculo*>& estoqueFilial = getEstoqueFilial(filial);
+
+                for (size_t i = 0; i < estoqueFilial.size(); ++i) {
+                    Veiculo* v = estoqueFilial[i];
                     if (v->Tipo() == tipo && v->getModelo() == modelo &&
                         v->getCor() == cor && v->getAno() == ano) {
                         veiculoSelecionado = v;
@@ -497,7 +523,6 @@ public:
 
                 if (!veiculoSelecionado) {
                     std::cout << "\nVeículo não encontrado ou indisponível.\n";
-                    // pergunta se quer tentar outro veículo
                     int tentar;
                     std::cout << "Deseja tentar pesquisar outro veículo? (1-Sim / 2-Não): ";
                     std::cin >> tentar;
@@ -513,7 +538,6 @@ public:
                 int opcAdicionar;
                 std::cin >> opcAdicionar;
                 if (opcAdicionar != 1) {
-                    // pergunta se deseja continuar comprando outros
                     int querContinuar;
                     std::cout << "Deseja pesquisar/selecionar outro veículo? (1-Sim / 2-Não): ";
                     std::cin >> querContinuar;
@@ -521,7 +545,6 @@ public:
                     else break;
                 }
 
-                // registra item no "carrinho" temporário
                 ItemCompraTemp item;
                 item.tipo = tipo;
                 item.modelo = modelo;
@@ -531,12 +554,10 @@ public:
                 carrinho.push_back(item);
                 totalSemDesconto += item.valorOriginal;
 
-                // Remove do estoque (em memória) imediatamente para evitar duplicata em mesma sessão
                 try {
-                    if (indiceRemover >= 0 && indiceRemover < static_cast<int>(estoque.size())) {
-                        // guarda ponteiro para deletar depois (já vamos deletar agora)
-                        delete estoque[indiceRemover];
-                        estoque.erase(estoque.begin() + indiceRemover);
+                    if (indiceRemover >= 0 && indiceRemover < static_cast<int>(estoqueFilial.size())) {
+                        delete estoqueFilial[indiceRemover];
+                        estoqueFilial.erase(estoqueFilial.begin() + indiceRemover);
                     } else {
                         throw std::out_of_range("Índice do veículo para remoção é inválido.");
                     }
@@ -544,40 +565,34 @@ public:
                     std::cerr << "Erro ao remover veículo do estoque: " << e.what() << "\n";
                 }
 
-                // pergunta se quer comprar mais um veículo antes de finalizar a compra
                 int mais;
                 std::cout << "\nDeseja adicionar outro veículo a essa compra? (1-Sim / 2-Não): ";
                 std::cin >> mais;
                 if (mais == 1) {
                     continuar = true;
-                    // continuar o loop de compra (estoque já atualizado)
                 } else {
                     continuar = false;
                 }
-            } // fim do loop de adicionar veículos
+            } 
 
             if (carrinho.empty()) {
                 std::cout << "Nenhum veículo adicionado. Operação encerrada.\n";
-                // caso nada tenha sido adicionado, nada a salvar
                 return;
             }
 
             DescontoStrategy* estrategiaEscolhida = nullptr;
             int escolhaDesconto;
-            std::cout << "\nSelecione o tipo de desconto para essa compra (vai ser verificado e aplicado no total):\n";
+            std::cout << "\nSelecione o tipo de desconto para essa compra:\n";
             std::cout << "1. Sem desconto\n";
-            std::cout << "2. À vista (5%)\n";
-            std::cout << "3. Cliente fiel (10%)\n";
-            std::cout << "4. Promoção (15%)\n";
+            std::cout << "2. Cliente Fidelidade (5%)\n";
+            std::cout << "3. Promoção Especial (10%)\n";
+            std::cout << "4. Vendas Corporativas (15% - 2+ veículos)\n";
             std::cout << "Opção: ";
             std::cin >> escolhaDesconto;
 
-            bool aplicouPromocionalNoTotal = false;
+            bool aplicouVendaCorporativa = false;
             switch (escolhaDesconto) {
-                case 2:
-                    estrategiaEscolhida = new DescontoAVista();
-                    break;
-                case 3: {
+                case 2: {
                     bool jaComprou = false;
                     for (const Venda& v : historicoVendas) {
                         if (v.getDocumentoClienteRaw() == documentoCliente) {
@@ -587,21 +602,24 @@ public:
                     }
                     if (jaComprou) {
                         estrategiaEscolhida = new DescontoClienteFiel();
-                        std::cout << "Cliente fiel detectado — desconto de 10% será considerado.\n";
+                        std::cout << "Cliente fiel detectado — desconto de 5% será considerado.\n";
                     } else {
                         estrategiaEscolhida = new SemDesconto();
                         std::cout << "Esse cliente ainda não possui histórico de compras. Desconto de fidelidade não será aplicado.\n";
                     }
                     break;
                 }
+                case 3:
+                    estrategiaEscolhida = new DescontoPromocional();
+                    break;
                 case 4: {
                     if (carrinho.size() >= 2) {
-                        estrategiaEscolhida = new DescontoPromocional();
-                        aplicouPromocionalNoTotal = true;
-                        std::cout << "Desconto promocional selecionado e válido (compra com " << carrinho.size() << " veículos).\n";
+                        estrategiaEscolhida = new VendaCorporativa();
+                        aplicouVendaCorporativa = true;
+                        std::cout << "Venda corporativa selecionada e válida (compra com " << carrinho.size() << " veículos).\n";
                     } else {
                         estrategiaEscolhida = new SemDesconto();
-                        std::cout << "Desconto promocional inválido: é necessário comprar 2 ou mais veículos para aplicar.\n";
+                        std::cout << "Venda corporativa inválida: é necessário comprar 2 ou mais veículos para aplicar.\n";
                     }
                     break;
                 }
@@ -613,7 +631,7 @@ public:
             double totalFinal = 0.0;
             std::vector<double> valoresFinaisPorItem(carrinho.size(), 0.0);
 
-            if (aplicouPromocionalNoTotal) {
+            if (aplicouVendaCorporativa) {
                 double totalComDesconto = estrategiaEscolhida->aplicarDesconto(totalSemDesconto); // total * 0.85
                 for (size_t i = 0; i < carrinho.size(); ++i) {
                     double proporcao = carrinho[i].valorOriginal / totalSemDesconto;
@@ -637,12 +655,13 @@ public:
                           << "  | Valor Final: R$" << valoresFinaisPorItem[i] << "\n";
             }
             std::cout << "Subtotal: R$" << totalSemDesconto << "\n";
-            if (aplicouPromocionalNoTotal) {
-                std::cout << "Desconto aplicado: " << "Promoção (15%)" << " (no total) \n";
+            if (aplicouVendaCorporativa) {
+                std::cout << "Desconto aplicado: " << "Vendas Corporativas (15%)" << " (no total) \n";
             } else {
                 std::cout << "Desconto aplicado: " << estrategiaEscolhida->getNome() << "\n";
             }
             std::cout << "Total a pagar: R$" << totalFinal << "\n";
+            std::cout << "Forma de pagamento: " << formaPagamento << "\n";
 
             std::cout << "Confirmar pagamento de R$" << totalFinal << "? (1-Sim / 2-Não): ";
             int confirma;
@@ -667,10 +686,10 @@ public:
                             << carrinho[i].modelo << ","
                             << carrinho[i].ano << ","
                             << carrinho[i].valorOriginal << ","
-                            << (aplicouPromocionalNoTotal ? "Promoção (15%)" : estrategiaEscolhida->getNome()) << ","
+                            << (aplicouVendaCorporativa ? "Vendas Corporativas (15%)" : estrategiaEscolhida->getNome()) << ","
                             << valoresFinaisPorItem[i] << ","
-                            << "À vista,"   // formaPagamento fixo por enquanto
-                            << "Confirmada," // status
+                            << formaPagamento << ","
+                            << "Confirmada,"
                             << dataHoraVenda << ","
                             << vendedorAtivoNome << "\n";
 
@@ -684,9 +703,9 @@ public:
                             carrinho[i].modelo,
                             carrinho[i].ano,
                             carrinho[i].valorOriginal,
-                            (aplicouPromocionalNoTotal ? "Promoção (15%)" : estrategiaEscolhida->getNome()),
+                            (aplicouVendaCorporativa ? "Vendas Corporativas (15%)" : estrategiaEscolhida->getNome()),
                             valoresFinaisPorItem[i],
-                            "À vista",
+                            formaPagamento,
                             "Confirmada",
                             dataHoraVenda,
                             vendedorAtivoNome
@@ -711,7 +730,6 @@ public:
     }
 
     void listarHistoricoVendas() {
-        // [NOVO] try/catch para leitura do histórico em memória
         try {
             if (historicoVendas.empty()) {
                 std::cout << "\nNenhuma venda registrada ainda.\n";
@@ -728,7 +746,6 @@ public:
     }
 
     void listarHistoricoCliente(std::string docBusca) {
-        // [NOVO] try/catch para filtrar histórico por cliente
         try {
             if (historicoVendas.empty()) {
                 std::cout << "\nNenhuma venda registrada ainda.\n";
@@ -761,7 +778,21 @@ public:
 
             arquivo << "Tipo,Modelo,Ano,Valor,Cor\n";
 
-            for (Veiculo* v : estoque) {
+            for (Veiculo* v : estoqueLondrina) {
+                arquivo << v->Tipo() << ","
+                        << v->getModelo() << ","
+                        << v->getAno() << ","
+                        << v->getValor() << ","
+                        << v->getCor() << "\n";
+            }
+            for (Veiculo* v : estoqueMaringa) {
+                arquivo << v->Tipo() << ","
+                        << v->getModelo() << ","
+                        << v->getAno() << ","
+                        << v->getValor() << ","
+                        << v->getCor() << "\n";
+            }
+            for (Veiculo* v : estoqueCuritiba) {
                 arquivo << v->Tipo() << ","
                         << v->getModelo() << ","
                         << v->getAno() << ","
@@ -776,12 +807,25 @@ public:
         }
     }
 
-
     void listarVeiculos() {
-        carregarEstoqueCSV("estoque.csv");
-
-        std::cout << "\n Veículos no estoque:\n";
-        for (Veiculo* v : estoque) {
+        std::cout << "\n=== VEÍCULOS POR FILIAL ===\n";
+        
+        std::cout << "\nLONDRINA (" << estoqueLondrina.size() << " veículos):\n";
+        for (Veiculo* v : estoqueLondrina) {
+            std::cout << "- " << v->Tipo() << ": " << v->getModelo()
+                    << " (" << v->getCor() << ", " << v->getAno()
+                    << ") - R$" << v->getValor() << "\n";
+        }
+        
+        std::cout << "\nMARINGÁ (" << estoqueMaringa.size() << " veículos):\n";
+        for (Veiculo* v : estoqueMaringa) {
+            std::cout << "- " << v->Tipo() << ": " << v->getModelo()
+                    << " (" << v->getCor() << ", " << v->getAno()
+                    << ") - R$" << v->getValor() << "\n";
+        }
+        
+        std::cout << "\nCURITIBA (" << estoqueCuritiba.size() << " veículos):\n";
+        for (Veiculo* v : estoqueCuritiba) {
             std::cout << "- " << v->Tipo() << ": " << v->getModelo()
                     << " (" << v->getCor() << ", " << v->getAno()
                     << ") - R$" << v->getValor() << "\n";
@@ -790,11 +834,24 @@ public:
 
     bool buscarVeiculos() {
         try {
-            carregarEstoqueCSV("estoque.csv");
-
             std::string tipo, modelo, cor;
             int ano;
             bool encontrado = false;
+
+            int opcFilial;
+            std::cout << "Selecione a filial para consulta:\n";
+            std::cout << "1. Londrina\n2. Maringá\n3. Curitiba\nOpção: ";
+            std::cin >> opcFilial;
+            
+            std::string filial;
+            switch (opcFilial) {
+                case 1: filial = "Londrina"; break;
+                case 2: filial = "Maringá"; break;
+                case 3: filial = "Curitiba"; break;
+                default: 
+                    std::cout << "Opção inválida!\n";
+                    return false;
+            }
 
             std::cout << "Digite o tipo de veículo (Carro/Moto): ";
             std::cin >> tipo;
@@ -806,12 +863,14 @@ public:
             std::cout << "Ano: ";
             std::cin >> ano;
 
-            for (Veiculo* v : estoque) {
+            std::vector<Veiculo*>& estoqueFilial = getEstoqueFilial(filial);
+            
+            for (Veiculo* v : estoqueFilial) {
                 if (v->Tipo() == tipo &&
                     v->getModelo() == modelo &&
                     v->getCor() == cor &&
                     v->getAno() == ano) {
-                    std::cout << "\nStatus: Disponível:\n";
+                    std::cout << "\nStatus: Disponível em " << filial << ":\n";
                     std::cout << "- " << v->Tipo() << ": " << v->getModelo()
                               << " (" << v->getCor() << ", " << v->getAno()
                               << ") - R$" << v->getValor() << "\n";
@@ -821,7 +880,7 @@ public:
             }
 
             if (!encontrado) {
-                std::cout << "Veículo indisponível\n";
+                std::cout << "Veículo indisponível em " << filial << "\n";
                 return false;
             }
 
@@ -838,16 +897,19 @@ GerenciadorDriveTech* GerenciadorDriveTech::instancia = nullptr;
 
 int main() {
     GerenciadorDriveTech* sistema = GerenciadorDriveTech::obterInstancia();
-    sistema->carregarEstoqueCSV("estoque.csv");
-    //Iago, aqui criei um mini menu no terminal só para teste para ver se a lógica está correta
+    sistema->carregarEstoqueCSV("estoque.csv"); // CARREGA UMA VEZ NO INÍCIO
+    sistema->cadastrarVendedor(Vendedor("Vendedor 1", "doc1", "vendedor1", "senha1"));
+    sistema->cadastrarVendedor(Vendedor("Vendedor 2", "doc2", "vendedor2", "senha2"));
+    sistema->cadastrarVendedor(Vendedor("Vendedor 3", "doc3", "vendedor3", "senha3"));
+    sistema->cadastrarVendedor(Vendedor("Vendedor 4", "doc4", "vendedor4", "senha4"));
+    
     int opcao;
 
     do {
         std::cout << "\n=== MENU DRIVE TECH ===\n";
         std::cout << "1. Cadastrar Cliente\n";
-        std::cout << "2. Cadastrar Vendedor\n";
-        std::cout << "3. Login de Vendedor\n";
-        std::cout << "4. Sair\n";
+        std::cout << "2. Login de Vendedor\n";
+        std::cout << "3. Sair\n";
         std::cout << "Escolha uma opção: ";
         std::cin >> opcao;
         std::cin.ignore(); // Limpa buffer
@@ -863,19 +925,6 @@ int main() {
                 break;
             }
             case 2: {
-                std::string nome, doc, login, senha;
-                std::cout << "Nome do vendedor: ";
-                std::getline(std::cin, nome);
-                std::cout << "Documento: ";
-                std::getline(std::cin, doc);
-                std::cout << "Login: ";
-                std::getline(std::cin, login);
-                std::cout << "Senha: ";
-                std::getline(std::cin, senha);
-                sistema->cadastrarVendedor(Vendedor(nome, doc, login, senha));
-                break;
-            }
-            case 3: {
                 std::string login, senha;
                 std::cout << "Login: ";
                 std::getline(std::cin, login);
@@ -885,14 +934,14 @@ int main() {
                 break;
             }
 
-            case 4:
+            case 3:
                 std::cout << "Encerrando o sistema...\n";
                 break;
             default:
                 std::cout << "Opção inválida!\n";
         }
 
-    } while (opcao != 4);
+    } while (opcao != 3);
 
     return 0;
 }
