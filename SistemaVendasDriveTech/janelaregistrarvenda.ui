@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>JanelaRegistrarVenda</class>
+ <widget class="QWidget" name="JanelaRegistrarVenda">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>881</width>
+    <height>748</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
+     </property>
+     <property name="title">
+      <string>Filial e Cliente</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QLabel" name="labelFilial">
+        <property name="text">
+         <string>Filial:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBoxFilial">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione a filial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Curitiba</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Londrina</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Maringa</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelNome">
+        <property name="text">
+         <string>Nome:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEditNome">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelDocumento">
+        <property name="text">
+         <string>CPF/CNPJ:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEditDocumento">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
+     </property>
+     <property name="title">
+      <string>Veículo</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="labelTipo">
+        <property name="text">
+         <string>Tipo:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBoxTipo">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione o tipo</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Carro</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Moto</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelModelo">
+        <property name="text">
+         <string>Modelo:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBoxModelo">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione o modelo</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelAno">
+        <property name="text">
+         <string>Ano:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBoxAno">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione o ano</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelCor">
+        <property name="text">
+         <string>Cor:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBoxCor">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione a cor</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>Descontos e Pagamento</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelDesconto">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>Política de desconto:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBoxDesconto">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione a política de desconto</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Sem desconto</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Cliente fidelidade</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Promoção especial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Vendas corporativas</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelPagamento">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>Forma de pagamento</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxPagamento">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione a forma de pagamento</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>À vista</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Parcelado</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelEntrada">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>Valor de entrada (R$):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lineEditEntrada"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelParcelas">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>Nº de parcelas:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="spinBoxParcelas">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="pushButtonRegistrarVenda">
+       <property name="styleSheet">
+        <string notr="true">color: green;</string>
+       </property>
+       <property name="text">
+        <string>Registrar venda</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonCancelar">
+       <property name="styleSheet">
+        <string notr="true">color: red;</string>
+       </property>
+       <property name="text">
+        <string>Cancelar</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
+     </property>
+     <property name="title">
+      <string> Resumo da Venda</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTextBrowser" name="textBrowserResumo"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

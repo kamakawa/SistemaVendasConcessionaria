@@ -1,0 +1,9 @@
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/InterfaceSistemaVendasConcessionaria.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/edit_cache.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/rebuild_cache.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/list_install_components.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/install.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/install/local.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/install/strip.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/InterfaceSistemaVendasConcessionaria_autogen_timestamp_deps.dir
+/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/CMakeFiles/InterfaceSistemaVendasConcessionaria_autogen.dir

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>JanelaConsultarEstoque</class>
+ <widget class="QWidget" name="JanelaConsultarEstoque">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>945</width>
+    <height>259</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="widgetCabecalho" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButtonVoltar">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>Voltar</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: white;</string>
+     </property>
+     <property name="title">
+      <string>Filtros de Consulta</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelFilial">
+        <property name="styleSheet">
+         <string notr="true">color: #00BFFF;</string>
+        </property>
+        <property name="text">
+         <string>Filial:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBoxFilial">
+        <property name="styleSheet">
+         <string notr="true">color: #00BFFF;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione a filial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Curitiba</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Londrina</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Maringa</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelTipoDeVeiculo">
+        <property name="styleSheet">
+         <string notr="true">color: #00BFFF;</string>
+        </property>
+        <property name="text">
+         <string>Tipo de veículo:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboBoxTipoDeVeiculo">
+        <property name="styleSheet">
+         <string notr="true">color: #00BFFF;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione o tipo</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Carro</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Moto</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelModelo">
+        <property name="styleSheet">
+         <string notr="true">color: #00BFFF;</string>
+        </property>
+        <property name="text">
+         <string>Modelo:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboBoxModelo">
+        <property name="styleSheet">
+         <string notr="true">color: #00BFFF;</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Selecione o modelo</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="pushButtonConsulta">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>Consultar</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelStatus">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_InterfaceSistemaVendasConcessionaria_FILE /home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug/InterfaceSistemaVendasConcessionaria)
+set(__QT_DEPLOY_TARGET_InterfaceSistemaVendasConcessionaria_TYPE EXECUTABLE)

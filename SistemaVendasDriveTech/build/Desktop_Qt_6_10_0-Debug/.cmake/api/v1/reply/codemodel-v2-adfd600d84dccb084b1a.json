@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-fc5abbdad4e00cd7e2a7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "InterfaceSistemaVendasConcessionaria",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "InterfaceSistemaVendasConcessionaria::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-InterfaceSistemaVendasConcessionaria-Debug-700f2a40e67686f52ae5.json",
+					"name" : "InterfaceSistemaVendasConcessionaria",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "InterfaceSistemaVendasConcessionaria_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-InterfaceSistemaVendasConcessionaria_autogen-Debug-30011c4dbb75db769807.json",
+					"name" : "InterfaceSistemaVendasConcessionaria_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "InterfaceSistemaVendasConcessionaria_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-InterfaceSistemaVendasConcessionaria_autogen_timestamp_deps-Debug-2a7302b4a9ad66ad486e.json",
+					"name" : "InterfaceSistemaVendasConcessionaria_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/erickamakawa/Documentos/SistemaVendasDriveTech/build/Desktop_Qt_6_10_0-Debug",
+		"source" : "/home/erickamakawa/Documentos/SistemaVendasDriveTech"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
